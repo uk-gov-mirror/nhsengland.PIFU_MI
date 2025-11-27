@@ -13,7 +13,8 @@ from openpyxl.styles import NamedStyle
 # COMMAND ----------
 
 #Load PIFU data
-df_raw_pifu = spark.read.option("header","true").option("recursiveFileLookup","true").parquet(env["pifu_path"])
+#df_raw_pifu = spark.read.option("header","true").option("recursiveFileLookup","true").parquet(env["pifu_path"])
+df_raw_pifu = spark.table('udal_silver_restricted.udalsqlmart_eroc.eroc_pifu_reporting_cloud')
 wb = openpyxl.load_workbook('report_template.xlsx')
 report_start = 'August 2021 to '
 
@@ -24,6 +25,10 @@ publishing_month = df_raw_pifu.select(F.max("EROC_DerMonth")).collect()[0][0]
 publishing_month = datetime.strptime(publishing_month, '%Y-%m-%d')
 publishing_month = publishing_month.strftime("%B %Y")
 date_header = (report_start + publishing_month) 
+
+# Create a single-column DataFrame of column headers
+df_columns = pd.DataFrame(df_raw_pifu.columns, columns=["Column Header"])
+display(df_columns)
 
 # COMMAND ----------
 
